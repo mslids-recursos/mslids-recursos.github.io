@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Have You Ever…? · Ms. Lids</title>
+<meta name="theme-color" content="#1C1F3A">
+<style>
+:root{
+  --red:#D9283C; --navy:#1C1F3A; --yellow:#FFC93C;
+  --cream:#FFF8EC; --paper:#FFFFFF; --ink:#1C1F3A; --muted:#5B5F78;
+  --sq:#FFFFFF; --sq-alt:#FDEFD3; --line:#E9DFC9;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'Trebuchet MS','Segoe UI',system-ui,sans-serif;background:var(--cream);color:var(--ink);
+  display:flex;justify-content:center;min-height:100%;overflow-x:hidden}
+.app{width:100%;max-width:480px;padding:14px 14px 28px;display:flex;flex-direction:column;gap:12px}
+.hidden{display:none!important}
+
+/* Logo */
+.sticker{width:86px;height:86px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;
+  margin:6px auto 0;box-shadow:0 4px 0 var(--navy);transform:rotate(-6deg);
+  font-family:'Arial Narrow',Impact,'Helvetica Neue',sans-serif;font-weight:700;font-size:24px;letter-spacing:.01em;border:3px solid #fff;outline:3px solid var(--navy)}
+.sticker{text-align:center;line-height:.95}
+.sticker.sm{width:48px;height:48px;font-size:11px;margin:0;border-width:2px;outline-width:2px;box-shadow:0 2px 0 var(--navy)}
+
+/* Setup */
+.setup{text-align:center;display:flex;flex-direction:column;gap:14px}
+.title{font-family:'Arial Black','Trebuchet MS',sans-serif;font-size:34px;line-height:1.05;color:var(--navy);margin-top:6px}
+.title span{color:var(--red)}
+.tag{display:inline-block;background:var(--yellow);color:var(--navy);font-weight:700;font-size:13px;padding:5px 12px;border-radius:99px}
+.card{background:var(--paper);border-radius:18px;padding:16px;box-shadow:0 3px 0 var(--line);text-align:left}
+.card h3{font-size:16px;margin-bottom:8px;color:var(--navy)}
+.names{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.names label{font-size:12px;font-weight:700;color:var(--muted);display:flex;flex-direction:column;gap:5px}
+.names input{font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);color:var(--ink);background:#fff;width:100%}
+.names input:focus{outline:none;border-color:var(--navy)}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:4px;border:2px solid var(--navy)}
+.dot.p0{background:var(--red)} .dot.p1{background:var(--yellow)}
+.rules{list-style:none;display:flex;flex-direction:column;gap:7px;font-size:14.5px;line-height:1.35}
+.rules li{display:flex;gap:8px}
+.rules b{color:var(--red)}
+.btn{font:inherit;font-weight:700;font-size:18px;border:none;border-radius:16px;padding:14px 18px;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 4px 0 var(--navy);transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--navy)}
+.btn.yellow{background:var(--yellow);color:var(--navy)}
+.btn.ghost{background:#fff;color:var(--navy);box-shadow:0 3px 0 var(--line);font-size:14px;padding:9px 12px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.foot{text-align:center;font-size:12px;color:var(--muted)}
+
+/* Game header */
+.top{display:flex;align-items:center;gap:10px}
+.top .ttl{font-family:'Arial Black','Trebuchet MS',sans-serif;font-size:18px;line-height:1.05;flex:1}
+.top .ttl small{display:block;font-family:'Trebuchet MS',sans-serif;font-size:12px;color:var(--muted);font-weight:400}
+.players{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pl{background:#fff;border-radius:14px;padding:8px 10px;display:flex;align-items:center;gap:8px;border:3px solid transparent;box-shadow:0 2px 0 var(--line);transition:.2s}
+.pl.active{border-color:var(--navy);transform:translateY(-2px)}
+.pl .tk{width:26px;height:26px;flex:none}
+.pl .nm{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl .ps{font-size:11.5px;color:var(--muted)}
+
+/* Board */
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;background:var(--navy);padding:6px;border-radius:18px}
+.sq{position:relative;aspect-ratio:1/1;border-radius:10px;background:var(--sq);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--muted);overflow:hidden}
+.sq.alt{background:var(--sq-alt)}
+.sq .n{position:absolute;top:3px;left:5px;font-size:10px;opacity:.7}
+.sq .ic{font-size:22px;line-height:1}
+.sq .lb{font-size:9px;margin-top:2px;text-transform:uppercase;letter-spacing:.02em;color:var(--navy)}
+.sq.start{background:var(--yellow)} .sq.finish{background:var(--red)} .sq.finish .lb,.sq.finish .n{color:#fff}
+.sq.special{background:#E7E9F7}
+.tokens{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;gap:2px;padding-bottom:3px;pointer-events:none}
+.tk{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--navy);display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;box-shadow:0 2px 0 rgba(0,0,0,.25);transition:transform .15s}
+.tk.p0{background:var(--red);color:#fff} .tk.p1{background:var(--yellow);color:var(--navy)}
+.tk.hop{animation:hop .25s ease}
+@keyframes hop{50%{transform:translateY(-8px) scale(1.1)}}
+.tokens .tk{width:24px;height:24px}
+
+/* Dice bar */
+.dicebar{display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:12px;box-shadow:0 3px 0 var(--line)}
+.turn{flex:1;font-size:14px;color:var(--muted)}
+.turn b{display:block;font-size:19px;color:var(--navy)}
+.die{width:64px;height:64px;border-radius:14px;background:#fff;border:3px solid var(--navy);box-shadow:0 4px 0 var(--navy);
+  display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:8px;flex:none}
+.die i{width:11px;height:11px;border-radius:50%;background:var(--red);place-self:center;visibility:hidden}
+.die.rolling{animation:shake .5s linear infinite}
+@keyframes shake{0%{transform:rotate(0)}25%{transform:rotate(14deg)}50%{transform:rotate(-10deg)}75%{transform:rotate(8deg)}100%{transform:rotate(0)}}
+.roll{min-width:110px}
+
+/* Modal */
+.ov{position:fixed;inset:0;background:rgba(28,31,58,.55);display:flex;align-items:flex-end;justify-content:center;z-index:20;padding:12px}
+.sheet{width:100%;max-width:460px;background:var(--paper);border-radius:24px;padding:20px 18px 18px;box-shadow:0 -4px 0 var(--yellow);
+  animation:up .28s ease;display:flex;flex-direction:column;gap:12px;max-height:92vh;overflow:auto}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.who{font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:6px}
+.kind{align-self:flex-start;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;background:var(--navy);color:var(--yellow);padding:4px 10px;border-radius:99px}
+.q{font-family:'Arial Black','Trebuchet MS',sans-serif;font-size:27px;line-height:1.15;color:var(--navy)}
+.q .em{display:block;font-size:44px;margin-bottom:6px}
+.steps{display:flex;flex-direction:column;gap:8px;font-size:14.5px}
+.step{background:var(--cream);border-radius:12px;padding:10px 12px;line-height:1.35}
+.step b{color:var(--red)}
+.ans{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.ans span{background:#fff;border:2px solid var(--line);border-radius:10px;padding:4px 9px;font-weight:700;font-size:14px}
+.fu{margin-top:4px;display:flex;flex-direction:column;gap:3px;font-weight:700;color:var(--navy)}
+.hint{font-size:12px;color:var(--muted)}
+.row{display:flex;gap:8px}
+.row .btn{flex:1}
+
+/* Win */
+.win{text-align:center;align-items:center}
+.win .q{font-size:30px}
+canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:30}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SETUP -->
+  <section id="setup" class="setup">
+    <div class="sticker">Ms. Lids</div>
+    <h1 class="title">Have You <span>Ever…?</span></h1>
+    <div><span class="tag">Present Perfect · Board game for pairs</span></div>
+
+    <div class="card">
+      <h3>Who's playing?</h3>
+      <div class="names">
+        <label><span><span class="dot p0"></span>Player 1</span><input id="n0" maxlength="12" placeholder="Name" autocomplete="off"></label>
+        <label><span><span class="dot p1"></span>Player 2</span><input id="n1" maxlength="12" placeholder="Name" autocomplete="off"></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>How to play</h3>
+      <ul class="rules">
+        <li>🎲 <span>Take turns. <b>Roll the dice</b> and move.</span></li>
+        <li>💬 <span>Ask your <b>partner</b> the question.</span></li>
+        <li>🏁 <span>The first player to reach <b>FINISH</b> wins!</span></li>
+      </ul>
+    </div>
+
+    <button class="btn" id="startBtn">Let's play! ▶</button>
+    <p class="foot">One phone per pair · Pass the phone each turn</p>
+  </section>
+
+  <!-- GAME -->
+  <section id="game" class="hidden" style="display:flex;flex-direction:column;gap:12px">
+    <div class="top">
+      <div class="sticker sm">Ms. Lids</div>
+      <div class="ttl">Have You Ever…?<small>Present Perfect board game</small></div>
+      <button class="btn ghost" id="restartBtn" aria-label="Restart">↺ New</button>
+    </div>
+
+    <div class="players">
+      <div class="pl" id="pl0"><div class="tk p0" id="pt0"></div><div><div class="nm" id="pn0"></div><div class="ps" id="pp0"></div></div></div>
+      <div class="pl" id="pl1"><div class="tk p1" id="pt1"></div><div><div class="nm" id="pn1"></div><div class="ps" id="pp1"></div></div></div>
+    </div>
+
+    <div class="board" id="board"></div>
+
+    <div class="dicebar">
+      <div class="turn" id="turnTxt"></div>
+      <div class="die" id="die"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <button class="btn roll" id="rollBtn">Roll</button>
+    </div>
+    <p class="foot">© Ms. Lids · Materials for English teachers</p>
+  </section>
+</div>
+
+<!-- MODAL -->
+<div class="ov hidden" id="ov"><div class="sheet" id="sheet"></div></div>
+<canvas id="cf"></canvas>
+
+<script>
+(function(){
+/* ---------- Content ---------- */
+var QUESTIONS = [
+  ["🍣","eaten sushi"],["✈️","flown in a plane"],["🐴","ridden a horse"],["🎤","sung karaoke"],
+  ["🌙","stayed up all night"],["🦴","broken a bone"],["📱","lost your phone"],["⭐","met a famous person"],
+  ["🏆","won a prize"],["😭","cried during a movie"],["🗺️","gotten lost in a city"],["⛺","slept in a tent"],
+  ["🐛","eaten something really strange"],["😂","laughed at the wrong moment"],["🎬","made a video for social media"],
+  ["🌍","visited another country"],["❄️","seen snow"],["✍️","written a song or a poem"],["😴","fallen asleep in class"],
+  ["⏰","been late for something important"],["🎸","played a musical instrument"],["🏍️","ridden a motorcycle"],
+  ["🗣️","spoken English with a tourist"],["💇","dyed your hair a crazy color"],["⛰️","climbed a mountain"],
+  ["👻","seen a ghost"],["🛗","been stuck in an elevator"],["🎙️","given a speech in public"],["🐶","adopted a pet"],
+  ["🎂","baked a cake"],["🎁","forgotten a friend's birthday"],["💸","bought something you never used"],
+  ["🏄","tried an extreme sport"],["📺","been on TV or radio"],["🌊","swum in the ocean at night"],
+  ["🎮","played a video game for more than 5 hours"],["🍳","cooked for more than 10 people"],["📚","read a whole book in one day"],
+  ["🤥","told a lie to get out of trouble"],["🎢","been on a really scary ride"]
+];
+var FOLLOW = ["When did you do it?","Where were you?","Who were you with?","How did you feel?","Did you like it?","What happened?","Would you do it again? Why?","How old were you?"];
+var SPECIAL = {
+  4:{ic:"⭐",lb:"Your Q",type:"own"},
+  7:{ic:"🔁",lb:"Again",type:"again"},
+  10:{ic:"⬅️",lb:"Back 2",type:"back"},
+  13:{ic:"🤔",lb:"Truth?",type:"truth"},
+  16:{ic:"⭐",lb:"Your Q",type:"own"},
+  19:{ic:"➡️",lb:"+2",type:"fwd"},
+  22:{ic:"⬅️",lb:"Back 2",type:"back"},
+  24:{ic:"🤔",lb:"Truth?",type:"truth"},
+  26:{ic:"🔁",lb:"Again",type:"again"}
+};
+var N = 30, COLS = 5;
+
+/* ---------- State ---------- */
+var S = {names:["",""], pos:[1,1], turn:0, busy:false, deck:[]};
+var $ = function(id){return document.getElementById(id)};
+
+/* ---------- Helpers ---------- */
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function draw(){ if(!S.deck.length) S.deck = shuffle(QUESTIONS.slice()); return S.deck.pop(); }
+function pick(arr,n){return shuffle(arr.slice()).slice(0,n)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function initial(i){return (S.names[i]||"P"+(i+1)).charAt(0).toUpperCase()}
+function other(){return 1-S.turn}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+
+/* ---------- Sound (tiny, no files) ---------- */
+var ac=null;
+function beep(f,d,type,vol){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();var o=ac.createOscillator(),g=ac.createGain();
+  o.type=type||"triangle";o.frequency.value=f;g.gain.value=vol||0.08;o.connect(g);g.connect(ac.destination);o.start();
+  g.gain.exponentialRampToValueAtTime(0.0001,ac.currentTime+(d||0.08));o.stop(ac.currentTime+(d||0.08)+0.02)}catch(e){}}
+
+/* ---------- Board ---------- */
+function cellToSquare(r,c){ // r=0 is top row; snake from bottom-left
+  var rowsFromBottom = (N/COLS-1) - r;
+  var idx = rowsFromBottom % 2 === 0 ? c : (COLS-1-c);
+  return rowsFromBottom*COLS + idx + 1;
+}
+function buildBoard(){
+  var b=$("board"); b.innerHTML="";
+  for(var r=0;r<N/COLS;r++){for(var c=0;c<COLS;c++){
+    var n=cellToSquare(r,c), d=document.createElement("div");
+    d.className="sq"+((n%2)?"":" alt"); d.id="sq"+n;
+    var ic="💬", lb="";
+    if(n===1){d.className+=" start";ic="🚩";lb="Start"}
+    else if(n===N){d.className+=" finish";ic="🏁";lb="Finish"}
+    else if(SPECIAL[n]){d.className+=" special";ic=SPECIAL[n].ic;lb=SPECIAL[n].lb}
+    d.innerHTML='<span class="n">'+n+'</span><span class="ic">'+ic+'</span>'+(lb?'<span class="lb">'+lb+'</span>':'')+'<div class="tokens"></div>';
+    b.appendChild(d);
+  }}
+}
+function renderTokens(hopIdx){
+  document.querySelectorAll(".tokens").forEach(function(t){t.innerHTML=""});
+  for(var i=0;i<2;i++){
+    var t=document.createElement("div"); t.className="tk p"+i+(hopIdx===i?" hop":""); t.textContent=initial(i);
+    $("sq"+S.pos[i]).querySelector(".tokens").appendChild(t);
+  }
+}
+function renderPlayers(){
+  for(var i=0;i<2;i++){
+    $("pn"+i).textContent=S.names[i]; $("pt"+i).textContent=initial(i);
+    $("pp"+i).textContent="Square "+S.pos[i]+" / "+N;
+    $("pl"+i).classList.toggle("active",S.turn===i);
+  }
+  $("turnTxt").innerHTML="It's your turn,<b>"+esc(S.names[S.turn])+"</b>";
+}
+var PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+function showDie(v){var p=$("die").children;for(var i=0;i<9;i++)p[i].style.visibility=PIPS[v].indexOf(i)>-1?"visible":"hidden"}
+
+/* ---------- Movement ---------- */
+async function moveBy(steps){
+  var dir = steps>0?1:-1;
+  for(var k=0;k<Math.abs(steps);k++){
+    var np=S.pos[S.turn]+dir; if(np<1||np>N)break;
+    S.pos[S.turn]=np; renderTokens(S.turn); renderPlayers(); beep(dir>0?520+np*8:300,.06);
+    await sleep(240);
+  }
+}
+
+async function roll(){
+  if(S.busy)return; S.busy=true; $("rollBtn").disabled=true;
+  var die=$("die"); die.classList.add("rolling");
+  for(var i=0;i<9;i++){showDie(1+Math.floor(Math.random()*6)); beep(180+Math.random()*120,.03,"square",.03); await sleep(60)}
+  var v=1+Math.floor(Math.random()*6); showDie(v); die.classList.remove("rolling");
+  await sleep(250);
+  var target=Math.min(N,S.pos[S.turn]+v);
+  await moveBy(target-S.pos[S.turn]);
+  await sleep(200);
+  land();
+}
+
+function land(){
+  var p=S.pos[S.turn];
+  if(p>=N) return win();
+  var sp=SPECIAL[p];
+  if(!sp) return questionCard();
+  if(sp.type==="own") return ownCard();
+  if(sp.type==="truth") return truthCard();
+  if(sp.type==="again") return infoCard("🔁","Roll again!","Lucky you!",function(){questionCard(true)});
+  if(sp.type==="back") return infoCard("⬅️","Go back 2 squares","Oops!",async function(){closeSheet();await moveBy(-2);land2()});
+  if(sp.type==="fwd") return infoCard("➡️","Move forward 2!","Great!",async function(){closeSheet();await moveBy(2);land2()});
+}
+function land2(){ // after a back/forward jump: always a normal question (no chained specials)
+  if(S.pos[S.turn]>=N) return win();
+  questionCard();
+}
+
+/* ---------- Cards ---------- */
+function openSheet(html){$("sheet").innerHTML=html;$("ov").classList.remove("hidden")}
+function closeSheet(){$("ov").classList.add("hidden")}
+function whoLine(){return '<div class="who"><span class="tk p'+S.turn+'" style="width:20px;height:20px;font-size:10px">'+initial(S.turn)+'</span>'+esc(S.names[S.turn])+' · square '+S.pos[S.turn]+'</div>'}
+
+function questionCard(again){
+  var q=draw();
+  openSheet(whoLine()+
+    '<span class="kind">Ask '+esc(S.names[other()])+'</span>'+
+    '<div class="q"><span class="em">'+q[0]+'</span>Have you ever '+esc(q[1])+'?</div>'+
+    '<div class="row"><button class="btn ghost" id="swapQ">↻ Other</button><button class="btn" id="doneQ">'+(again?'Roll again 🎲':'Done ✓')+'</button></div>');
+  $("swapQ").onclick=function(){questionCard(again)};
+  $("doneQ").onclick=function(){closeSheet(); again?keepTurn():nextTurn()};
+}
+function ownCard(){
+  openSheet(whoLine()+
+    '<span class="kind">⭐ Your question</span>'+
+    '<div class="q"><span class="em">⭐</span>Ask '+esc(S.names[other()])+' your own question!</div>'+
+    '<button class="btn" id="doneQ">Done ✓</button>');
+  $("doneQ").onclick=function(){closeSheet();nextTurn()};
+}
+function truthCard(){
+  var q=draw();
+  openSheet(whoLine()+
+    '<span class="kind">🤔 You answer · truth or lie?</span>'+
+    '<div class="q"><span class="em">'+q[0]+'</span>Have you ever '+esc(q[1])+'?</div>'+
+    '<button class="btn" id="doneQ">Done ✓</button>');
+  $("doneQ").onclick=function(){closeSheet();nextTurn()};
+}
+function infoCard(em,title,txt,cb){
+  openSheet(whoLine()+'<div class="q"><span class="em">'+em+'</span>'+esc(title)+'</div><div class="steps"><div class="step">'+esc(txt)+'</div></div><button class="btn yellow" id="okI">OK!</button>');
+  $("okI").onclick=cb;
+}
+function win(){
+  var w=S.turn;
+  openSheet('<div class="sheet win" style="box-shadow:none;padding:0;animation:none">'+
+    '<div class="q"><span class="em">🏆</span>'+esc(S.names[w])+' wins!</div>'+
+    '<div class="steps"><div class="step">Great job, both of you! 👏</div></div>'+
+    '<div class="row" style="width:100%"><button class="btn yellow" id="againW">Play again</button></div></div>');
+  $("againW").onclick=function(){closeSheet();stopConfetti();startGame(true)};
+  confetti(); [523,659,784,1046].forEach(function(f,i){setTimeout(function(){beep(f,.18,"triangle",.1)},i*130)});
+}
+
+/* ---------- Turns ---------- */
+function nextTurn(){S.turn=other();S.busy=false;$("rollBtn").disabled=false;renderPlayers();renderTokens()}
+function keepTurn(){S.busy=false;$("rollBtn").disabled=false;renderPlayers()}
+
+/* ---------- Setup ---------- */
+function startGame(same){
+  if(!same){
+    S.names=[$("n0").value.trim()||"Player 1",$("n1").value.trim()||"Player 2"];
+  }
+  S.pos=[1,1]; S.turn=0; S.busy=false; S.deck=shuffle(QUESTIONS.slice());
+  $("setup").classList.add("hidden"); $("game").classList.remove("hidden");
+  buildBoard(); renderTokens(); renderPlayers(); showDie(1); $("rollBtn").disabled=false;
+  window.scrollTo(0,0);
+}
+$("startBtn").onclick=function(){startGame(false)};
+$("rollBtn").onclick=roll;
+$("restartBtn").onclick=function(){
+  if(confirm("Start a new game?")){closeSheet();stopConfetti();$("game").classList.add("hidden");$("setup").classList.remove("hidden")}
+};
+
+/* ---------- Confetti ---------- */
+var cfRun=false;
+function confetti(){
+  var c=$("cf"),x=c.getContext("2d"),W=c.width=innerWidth,H=c.height=innerHeight,cols=["#D9283C","#FFC93C","#1C1F3A","#ffffff"];
+  var ps=[];for(var i=0;i<140;i++)ps.push({x:Math.random()*W,y:-20-Math.random()*H,r:4+Math.random()*5,c:cols[i%4],vy:2+Math.random()*3,vx:-1+Math.random()*2,a:Math.random()*6});
+  cfRun=true;var t0=Date.now();
+  (function f(){if(!cfRun){x.clearRect(0,0,W,H);return}x.clearRect(0,0,W,H);
+    ps.forEach(function(p){p.y+=p.vy;p.x+=p.vx;p.a+=.1;x.fillStyle=p.c;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);x.restore()});
+    if(Date.now()-t0<4500)requestAnimationFrame(f);else{cfRun=false;x.clearRect(0,0,W,H)}})();
+}
+function stopConfetti(){cfRun=false}
+})();
+</script>
+</body>
+</html>
