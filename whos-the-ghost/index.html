@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Who's the Ghost? · Ms. Lids</title>
+<meta name="description" content="A spooky Halloween vocabulary & speaking game for English classes. By Ms. Lids.">
+<meta name="theme-color" content="#1C1F3A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#D9283C; --navy:#1C1F3A; --navy2:#262A4D; --navy3:#31365F;
+    --yellow:#FFC93C; --white:#FFFFFF; --mist:#C9CCE6; --green:#3CCB8A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:'Nunito',system-ui,sans-serif;color:var(--white);
+    background:radial-gradient(circle at 85% 8%, rgba(255,201,60,.18) 0 70px, transparent 140px), var(--navy);
+    background-attachment:fixed;
+    min-height:100dvh;display:flex;justify-content:center;
+    user-select:none;-webkit-user-select:none;overflow-x:hidden;
+  }
+  .moon{position:fixed;top:22px;right:26px;width:58px;height:58px;border-radius:50%;
+    background:var(--yellow);box-shadow:0 0 40px rgba(255,201,60,.55);z-index:0}
+  .moon::after{content:"";position:absolute;top:8px;left:14px;width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,.08);box-shadow:20px 18px 0 -3px rgba(0,0,0,.07)}
+  .bats{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .bat{position:absolute;font-size:22px;opacity:.5;animation:fly linear infinite}
+  @keyframes fly{from{transform:translateX(-60px) translateY(0)}50%{transform:translateX(50vw) translateY(-30px)}to{transform:translateX(110vw) translateY(10px)}}
+  .app{position:relative;z-index:1;width:100%;max-width:480px;padding:20px 16px 28px;display:flex;flex-direction:column;min-height:100dvh}
+  .screen{display:none;flex:1;flex-direction:column;animation:fade .35s ease}
+  .screen.active{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .brand{font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--yellow);opacity:.9}
+  .brand b{color:var(--red)}
+  h1.title{font-family:'Creepster','Nunito',system-ui,sans-serif;font-weight:400;font-size:58px;line-height:.95;margin:10px 0 6px;color:var(--white);
+    text-shadow:0 3px 0 var(--red),0 0 24px rgba(217,40,60,.5);letter-spacing:.02em}
+  h1.title span{color:var(--yellow)}
+  .ghost-hero{font-size:84px;text-align:center;margin:6px 0 2px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45))}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+  .lead{color:var(--mist);font-size:16px;line-height:1.45;margin-bottom:18px}
+
+  .panel{background:var(--navy2);border:2px solid var(--navy3);border-radius:20px;padding:16px;margin-bottom:14px}
+  .label{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--yellow);margin-bottom:10px}
+  .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .seg button{font:inherit;font-weight:800;font-size:15px;padding:12px 6px;border-radius:14px;border:2px solid var(--navy3);background:var(--navy);color:var(--mist);cursor:pointer;line-height:1.15}
+  .seg button small{display:block;font-weight:700;font-size:11px;opacity:.8;margin-top:3px}
+  .seg button.on{background:var(--red);border-color:var(--red);color:var(--white)}
+  .stepper{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .stepper button{width:52px;height:52px;border-radius:50%;border:none;background:var(--navy3);color:var(--white);font-size:28px;font-weight:900;cursor:pointer}
+  .stepper .num{font-size:40px;font-weight:900;color:var(--white);min-width:60px;text-align:center}
+  .stepper .num small{display:block;font-size:12px;color:var(--mist);font-weight:700}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0}
+  .row + .row{border-top:1px solid var(--navy3);margin-top:6px;padding-top:12px}
+  .row .txt{font-weight:800;font-size:15px}
+  .row .txt small{display:block;font-weight:600;color:var(--mist);font-size:12.5px;margin-top:2px}
+  .switch{position:relative;width:56px;height:32px;flex:none}
+  .switch input{opacity:0;width:0;height:0}
+  .switch span{position:absolute;inset:0;background:var(--navy3);border-radius:32px;transition:.2s;cursor:pointer}
+  .switch span::before{content:"";position:absolute;width:24px;height:24px;left:4px;top:4px;background:var(--white);border-radius:50%;transition:.2s}
+  .switch input:checked + span{background:var(--green)}
+  .switch input:checked + span::before{transform:translateX(24px)}
+  .switch input:disabled + span{opacity:.35;cursor:not-allowed}
+
+  .btn{font:inherit;font-weight:900;font-size:19px;width:100%;padding:17px 18px;border-radius:18px;border:none;cursor:pointer;
+    background:var(--red);color:var(--white);box-shadow:0 5px 0 #8f1424;transition:transform .08s, box-shadow .08s;margin-top:6px}
+  .btn:active{transform:translateY(4px);box-shadow:0 1px 0 #8f1424}
+  .btn.yellow{background:var(--yellow);color:var(--navy);box-shadow:0 5px 0 #b88a12}
+  .btn.yellow:active{box-shadow:0 1px 0 #b88a12}
+  .btn.ghost{background:transparent;color:var(--mist);box-shadow:none;border:2px solid var(--navy3);font-size:16px;padding:13px}
+  .spacer{flex:1}
+  .link{background:none;border:none;color:var(--mist);font:inherit;font-weight:700;text-decoration:underline;margin:14px auto 0;display:block;cursor:pointer;font-size:15px}
+
+  /* pass screen */
+  .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .playerbig{font-family:'Creepster','Nunito',system-ui,sans-serif;font-size:76px;color:var(--yellow);line-height:1;margin:6px 0 10px;text-shadow:0 3px 0 var(--red)}
+  .muted{color:var(--mist);font-size:16px;line-height:1.45}
+  .dots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:18px 0 6px}
+  .dots i{width:12px;height:12px;border-radius:50%;background:var(--navy3);display:block}
+  .dots i.done{background:var(--green)}
+  .dots i.now{background:var(--yellow);box-shadow:0 0 0 3px rgba(255,201,60,.3)}
+  .eyes{font-size:64px;margin-bottom:10px}
+
+  /* secret card */
+  .card{width:100%;border-radius:26px;padding:34px 20px;text-align:center;margin:10px 0 18px;position:relative;overflow:hidden}
+  .card.word{background:var(--white);color:var(--navy);box-shadow:0 10px 0 var(--yellow)}
+  .card.isghost{background:linear-gradient(160deg,#2b2f58,#0f1124);border:3px solid var(--red);box-shadow:0 10px 0 var(--red)}
+  .card .tag{font-weight:900;font-size:13px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+  .card .emo{font-size:70px;margin:12px 0 4px}
+  .card .w{font-weight:900;font-size:42px;line-height:1.05;word-break:break-word}
+  .card.isghost .w{font-family:'Creepster','Nunito',system-ui,sans-serif;font-weight:400;font-size:46px;color:var(--white);letter-spacing:.03em}
+  .card .sub{font-size:15.5px;line-height:1.4;margin-top:12px;font-weight:700}
+  .card.isghost .sub{color:var(--mist)}
+  .hint{display:inline-block;margin-top:14px;background:var(--yellow);color:var(--navy);padding:8px 14px;border-radius:12px;font-weight:900;font-size:15px}
+
+  /* clue screen */
+  h2{font-weight:900;font-size:28px;line-height:1.1;margin:8px 0 6px}
+  h2 .y{color:var(--yellow)}
+  .order{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+  .order span{background:var(--navy3);border-radius:12px;padding:8px 12px;font-weight:900;font-size:15px}
+  .order span.first{background:var(--yellow);color:var(--navy)}
+  .starters{list-style:none;display:grid;gap:8px}
+  .starters li{background:var(--navy);border-radius:12px;padding:10px 12px;font-weight:700;font-size:15px;border-left:4px solid var(--red)}
+  .timer{display:flex;align-items:center;gap:14px}
+  .timer .t{font-size:44px;font-weight:900;font-variant-numeric:tabular-nums;min-width:110px}
+  .timer .t.low{color:var(--red)}
+  .timer button{flex:1;margin:0}
+  .round{display:inline-block;background:var(--red);border-radius:10px;padding:4px 10px;font-weight:900;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+
+  /* vote + reveal */
+  .count{font-family:'Creepster','Nunito',system-ui,sans-serif;font-size:120px;color:var(--yellow);line-height:1;text-shadow:0 4px 0 var(--red)}
+  .reveal-ghosts{font-family:'Creepster','Nunito',system-ui,sans-serif;font-size:56px;color:var(--white);line-height:1.05;text-shadow:0 3px 0 var(--red);margin:6px 0}
+  .reveal-word{background:var(--white);color:var(--navy);border-radius:18px;padding:14px 18px;font-weight:900;font-size:30px;margin:14px 0 6px;box-shadow:0 6px 0 var(--yellow)}
+  .rules{list-style:none;text-align:left;display:grid;gap:8px;margin-top:6px}
+  .rules li{background:var(--navy2);border-radius:12px;padding:10px 12px;font-weight:700;font-size:15px;line-height:1.35}
+  .rules li b{color:var(--yellow)}
+
+  /* how-to */
+  .how ol{padding-left:22px;display:grid;gap:10px;font-size:16px;line-height:1.45}
+  .how ol li::marker{color:var(--yellow);font-weight:900}
+  .how b{color:var(--yellow)}
+
+  footer{text-align:center;color:var(--mist);opacity:.65;font-size:12px;font-weight:700;margin-top:18px}
+  .shake{animation:shake .5s}
+  @keyframes shake{0%,100%{transform:none}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+</style>
+</head>
+<body>
+<div class="moon" aria-hidden="true"></div>
+<div class="bats" aria-hidden="true">
+  <div class="bat" style="top:14%;animation-duration:19s;animation-delay:-4s">🦇</div>
+  <div class="bat" style="top:62%;animation-duration:26s;animation-delay:-15s;font-size:16px">🦇</div>
+</div>
+
+<main class="app">
+
+  <!-- SETUP -->
+  <section class="screen active" id="s-setup">
+    <div class="brand">Ms. <b>Lids</b> · Halloween Edition</div>
+    <h1 class="title">Who's the <span>Ghost?</span></h1>
+    <div class="ghost-hero" aria-hidden="true">👻</div>
+    <p class="lead">Everyone gets the same secret word… except the ghost! Give clues in English and find the ghost before it escapes.</p>
+
+    <div class="panel">
+      <div class="label">Players</div>
+      <div class="stepper">
+        <button type="button" id="pMinus" aria-label="Fewer players">−</button>
+        <div class="num"><span id="pNum">5</span><small>players</small></div>
+        <button type="button" id="pPlus" aria-label="More players">+</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="label">Level</div>
+      <div class="seg" id="levelSeg">
+        <button type="button" data-v="basic" class="on">Basic<small>A1–A2</small></button>
+        <button type="button" data-v="advanced">Advanced<small>B1+</small></button>
+        <button type="button" data-v="mixed">Mixed<small>all words</small></button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <div class="txt">Ghost gets a hint<small>The ghost sees the category (e.g. "an animal")</small></div>
+        <label class="switch"><input type="checkbox" id="optHint" checked><span></span></label>
+      </div>
+      <div class="row">
+        <div class="txt">Two ghosts<small>For 7+ players</small></div>
+        <label class="switch"><input type="checkbox" id="optTwo" disabled><span></span></label>
+      </div>
+    </div>
+
+    <button class="btn" id="btnStart">Start the game 🎃</button>
+    <button class="link" id="btnHow">How to play</button>
+    <footer>© Ms. Lids · Resources for English teachers</footer>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="screen how" id="s-how">
+    <div class="brand">Ms. <b>Lids</b> · How to play</div>
+    <h2>How to play <span class="y">👻</span></h2>
+    <div class="panel">
+      <ol>
+        <li><b>Pass the phone.</b> Each player looks at their secret word alone. Don't show anyone!</li>
+        <li>One player is the <b>ghost</b>. The ghost doesn't know the word.</li>
+        <li><b>Give clues.</b> In order, each player says ONE clue in English. Don't say the word!</li>
+        <li>The ghost listens and pretends to know the word. 🤫</li>
+        <li>After 1–2 rounds, everyone <b>votes</b>: count to 3 and point at the ghost.</li>
+        <li>If the ghost is caught, it gets <b>one chance</b> to guess the word. Correct = the ghost wins!</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <div class="label">Clue starters</div>
+      <ul class="starters">
+        <li>It's something you can…</li>
+        <li>You can find it in / at…</li>
+        <li>It's usually… (color / size)</li>
+        <li>People use it to…</li>
+        <li>It reminds me of…</li>
+      </ul>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn yellow" id="btnHowBack">Got it!</button>
+  </section>
+
+  <!-- PASS -->
+  <section class="screen" id="s-pass">
+    <div class="brand">Ms. <b>Lids</b> · Who's the Ghost?</div>
+    <div class="center">
+      <div class="eyes" aria-hidden="true">🙈</div>
+      <p class="muted">Pass the phone to</p>
+      <div class="playerbig" id="passName">Player 1</div>
+      <p class="muted">Make sure nobody else can see the screen!</p>
+      <div class="dots" id="dots"></div>
+    </div>
+    <button class="btn yellow" id="btnShow">Tap to see my word 👀</button>
+  </section>
+
+  <!-- SECRET -->
+  <section class="screen" id="s-secret">
+    <div class="brand">Ms. <b>Lids</b> · <span id="secretWho">Player 1</span></div>
+    <div class="center">
+      <div class="card" id="card"></div>
+    </div>
+    <button class="btn" id="btnHide">Got it! Hide &amp; pass ➜</button>
+  </section>
+
+  <!-- CLUES -->
+  <section class="screen" id="s-clues">
+    <div class="brand">Ms. <b>Lids</b> · Who's the Ghost?</div>
+    <div><span class="round" id="roundTag">Round 1</span></div>
+    <h2>Give your <span class="y">clues!</span></h2>
+    <p class="muted">One clue each, in this order. Don't say the word!</p>
+    <div class="order" id="order"></div>
+
+    <div class="panel" style="margin-top:12px">
+      <div class="label">Timer</div>
+      <div class="timer">
+        <div class="t" id="tDisp">1:30</div>
+        <button class="btn ghost" id="btnTimer">Start ▶</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="label">Need help? Use these</div>
+      <ul class="starters">
+        <li>It's something you can…</li>
+        <li>You can find it in / at…</li>
+        <li>It's usually… (color / size)</li>
+        <li>People use it to…</li>
+      </ul>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn ghost" id="btnAgain">Another round of clues ↻</button>
+    <button class="btn" id="btnVote">Time to vote! 🗳️</button>
+  </section>
+
+  <!-- VOTE -->
+  <section class="screen" id="s-vote">
+    <div class="brand">Ms. <b>Lids</b> · Vote</div>
+    <div class="center">
+      <h2>Who's the <span class="y">ghost?</span></h2>
+      <p class="muted" id="voteTxt">Talk for 30 seconds. Then count to 3 and everyone points at the ghost!</p>
+      <div class="count" id="countDisp">👉</div>
+    </div>
+    <button class="btn yellow" id="btnCount">Count 3, 2, 1…</button>
+    <button class="btn" id="btnReveal">Reveal the ghost 👻</button>
+  </section>
+
+  <!-- REVEAL -->
+  <section class="screen" id="s-reveal">
+    <div class="brand">Ms. <b>Lids</b> · The truth</div>
+    <div class="center">
+      <p class="muted" id="revealLead">The ghost was…</p>
+      <div class="reveal-ghosts" id="revealGhosts">Player 3</div>
+      <p class="muted">The secret word was:</p>
+      <div class="reveal-word" id="revealWord">pumpkin</div>
+      <ul class="rules">
+        <li><b>Ghost caught?</b> It has ONE chance to guess the word. Correct → the ghost wins! 👻</li>
+        <li><b>Ghost not caught?</b> The ghost escapes and wins! 🏃</li>
+        <li><b>Wrong person voted out?</b> The ghost wins too. Spooky! 🦇</li>
+      </ul>
+    </div>
+    <button class="btn" id="btnNext">Play again 🎃</button>
+    <button class="link" id="btnSettings">Change settings</button>
+  </section>
+
+</main>
+
+<script>
+(() => {
+  // ---------- WORD BANK ----------
+  // [word, emoji, hint category]
+  const WORDS = {
+    basic: [
+      ["pumpkin","🎃","a plant / food"],
+      ["bat","🦇","an animal"],
+      ["spider","🕷️","an animal"],
+      ["black cat","🐈‍⬛","an animal"],
+      ["owl","🦉","an animal"],
+      ["witch","🧙‍♀️","a character"],
+      ["skeleton","🦴","a character"],
+      ["zombie","🧟","a character"],
+      ["monster","👹","a character"],
+      ["candy","🍬","food"],
+      ["chocolate","🍫","food"],
+      ["moon","🌕","something in nature"],
+      ["night","🌙","a time"],
+      ["mask","🎭","something you wear"],
+      ["costume","🦸","something you wear"],
+      ["hat","🎩","something you wear"],
+      ["broom","🧹","an object"],
+      ["candle","🕯️","an object"],
+      ["bag","👜","an object"],
+      ["door","🚪","part of a house"],
+      ["house","🏠","a place"],
+      ["party","🎉","an event"]
+    ],
+    advanced: [
+      ["cauldron","🫕","an object"],
+      ["potion","🧪","something you drink"],
+      ["spell","✨","something magic"],
+      ["wand","🪄","an object"],
+      ["coffin","⚰️","an object"],
+      ["tombstone","🪦","an object"],
+      ["graveyard","🪦","a place"],
+      ["haunted house","🏚️","a place"],
+      ["cobweb","🕸️","something in nature"],
+      ["werewolf","🐺","a character"],
+      ["vampire","🧛","a character"],
+      ["mummy","🩹","a character"],
+      ["scarecrow","🌾","a character"],
+      ["jack-o'-lantern","🎃","a decoration"],
+      ["trick-or-treating","🍭","an activity"],
+      ["crow","🐦‍⬛","an animal"],
+      ["fog","🌫️","weather"],
+      ["full moon","🌕","something in nature"],
+      ["skull","💀","part of the body"],
+      ["fangs","🦷","part of the body"],
+      ["bonfire","🔥","something hot"],
+      ["nightmare","😱","something in your mind"]
+    ]
+  };
+
+  // ---------- STATE ----------
+  const S = { players:5, level:"basic", hint:true, two:false,
+              ghosts:[], word:null, idx:0, round:1, used:new Set(), starter:0 };
+
+  const $ = id => document.getElementById(id);
+  const show = id => {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    $(id).classList.add('active'); window.scrollTo(0,0);
+  };
+  const rand = n => Math.floor(Math.random()*n);
+
+  // ---------- SETUP ----------
+  const MIN=3, MAX=12;
+  function syncSetup(){
+    $('pNum').textContent = S.players;
+    const two = $('optTwo');
+    two.disabled = S.players < 7;
+    if (two.disabled){ two.checked = false; S.two = false; }
+  }
+  $('pMinus').onclick = () => { if (S.players>MIN){S.players--; syncSetup();} };
+  $('pPlus').onclick  = () => { if (S.players<MAX){S.players++; syncSetup();} };
+  $('levelSeg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if(!b) return;
+    document.querySelectorAll('#levelSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); S.level = b.dataset.v;
+  });
+  $('optHint').onchange = e => S.hint = e.target.checked;
+  $('optTwo').onchange  = e => S.two  = e.target.checked;
+  $('btnHow').onclick = () => show('s-how');
+  $('btnHowBack').onclick = () => show('s-setup');
+  $('btnStart').onclick = newGame;
+  $('btnSettings').onclick = () => show('s-setup');
+
+  function pool(){
+    if (S.level==="mixed") return WORDS.basic.concat(WORDS.advanced);
+    return WORDS[S.level];
+  }
+  function pickWord(){
+    let p = pool().filter(w => !S.used.has(w[0]));
+    if (!p.length){ pool().forEach(w=>S.used.delete(w[0])); p = pool(); }
+    const w = p[rand(p.length)]; S.used.add(w[0]); return w;
+  }
+
+  function newGame(){
+    stopTimer();
+    S.word = pickWord();
+    const n = S.two ? 2 : 1;
+    const set = new Set();
+    while (set.size < n) set.add(rand(S.players));
+    S.ghosts = [...set].sort((a,b)=>a-b);
+    S.idx = 0; S.round = 1;
+    // the starter is never the ghost (fairer)
+    do { S.starter = rand(S.players); } while (S.ghosts.includes(S.starter));
+    showPass();
+  }
+
+  // ---------- PASS & SECRET ----------
+  function showPass(){
+    $('passName').textContent = 'Player ' + (S.idx+1);
+    const d = $('dots'); d.innerHTML = '';
+    for (let i=0;i<S.players;i++){
+      const el = document.createElement('i');
+      if (i < S.idx) el.className='done'; else if (i===S.idx) el.className='now';
+      d.appendChild(el);
+    }
+    show('s-pass');
+  }
+  $('btnShow').onclick = () => {
+    const isGhost = S.ghosts.includes(S.idx);
+    const c = $('card');
+    $('secretWho').textContent = 'Player ' + (S.idx+1);
+    if (isGhost){
+      c.className = 'card isghost';
+      c.innerHTML = `<div class="tag">Shh… secret</div>
+        <div class="emo">👻</div>
+        <div class="w">You are the ghost!</div>
+        <div class="sub">You don't know the word.<br>Listen to the clues and blend in!</div>
+        ${S.hint ? `<div class="hint">Hint: it's ${S.word[2]}</div>` : ''}`;
+      if (navigator.vibrate) navigator.vibrate([80,60,80]);
+    } else {
+      c.className = 'card word';
+      c.innerHTML = `<div class="tag">Your secret word</div>
+        <div class="emo">${S.word[1]}</div>
+        <div class="w">${S.word[0]}</div>
+        <div class="sub">Give clues, but never say the word!</div>`;
+    }
+    show('s-secret');
+  };
+  $('btnHide').onclick = () => {
+    $('card').innerHTML = '';
+    S.idx++;
+    if (S.idx < S.players) showPass(); else showClues();
+  };
+
+  // ---------- CLUES ----------
+  function showClues(){
+    $('roundTag').textContent = 'Round ' + S.round;
+    const o = $('order'); o.innerHTML = '';
+    for (let k=0;k<S.players;k++){
+      const p = (S.starter + k) % S.players;
+      const s = document.createElement('span');
+      s.textContent = (k===0?'▶ ':'') + 'Player ' + (p+1);
+      if (k===0) s.className='first';
+      o.appendChild(s);
+    }
+    resetTimer();
+    show('s-clues');
+  }
+  $('btnAgain').onclick = () => { S.round++; S.starter = (S.starter+1)%S.players; showClues(); };
+  $('btnVote').onclick = () => { stopTimer(); $('countDisp').textContent='👉'; show('s-vote'); };
+
+  // timer
+  const TOTAL = 90; let left = TOTAL, tId = null;
+  const fmt = s => Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  function paint(){ const t=$('tDisp'); t.textContent=fmt(left); t.classList.toggle('low', left<=10); }
+  function resetTimer(){ stopTimer(); left = TOTAL; paint(); $('btnTimer').textContent='Start ▶'; }
+  function stopTimer(){ if(tId){clearInterval(tId); tId=null;} }
+  $('btnTimer').onclick = () => {
+    if (tId){ stopTimer(); $('btnTimer').textContent='Start ▶'; return; }
+    if (left<=0) left = TOTAL;
+    $('btnTimer').textContent='Pause ❚❚';
+    tId = setInterval(() => {
+      left--; paint();
+      if (left<=0){ stopTimer(); $('btnTimer').textContent='Restart ↻';
+        $('tDisp').classList.add('shake'); setTimeout(()=>$('tDisp').classList.remove('shake'),600);
+        if (navigator.vibrate) navigator.vibrate(300); }
+    }, 1000);
+  };
+
+  // ---------- VOTE ----------
+  let counting = false;
+  $('btnCount').onclick = () => {
+    if (counting) return; counting = true;
+    const seq = ['3','2','1','👉'];
+    let i = 0; const el = $('countDisp');
+    const step = () => {
+      el.textContent = seq[i]; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+      i++; if (i<seq.length) setTimeout(step, 900); else counting = false;
+    };
+    step();
+  };
+  $('btnReveal').onclick = () => {
+    const names = S.ghosts.map(g => 'Player ' + (g+1));
+    $('revealLead').textContent = S.ghosts.length>1 ? 'The ghosts were…' : 'The ghost was…';
+    $('revealGhosts').textContent = names.join(' & ');
+    $('revealWord').textContent = S.word[1] + ' ' + S.word[0];
+    show('s-reveal');
+  };
+  $('btnNext').onclick = newGame;
+
+  syncSetup();
+})();
+</script>
+</body>
+</html>
